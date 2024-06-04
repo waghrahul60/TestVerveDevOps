@@ -1,7 +1,5 @@
 # Kunernetes
 
-
-
 ### 1. Why would one choose to run two containers in one k8s pod, rather than two separate pods?
 
 Running two containers in a single Kubernetes pod instead of separate pods has multiple advantages depending on the use case. 
@@ -21,7 +19,7 @@ If init container fails entire pod is masked as failed and Kubernetes recreates 
 
 2.  SideCar Container :
 A sidecar container runs alongside the primary application container within a Kubernetes Pod.
-this is used for logging and monitoring, it will collect the metrics, logs and data from main application.
+this is used for logging and monitoring, it will collect the metrics, logs, and data from the main application.
 To connect the app with cloudsql Database we need to deploy the Cloud SQL Auth Proxy as a sidecar container alongside your application container in the same pod. Configure the proxy with the necessary credentials or service account.
 
 ### 2. What is the impact of deleting a k8s pause container?
@@ -33,4 +31,12 @@ if the pause container is deleted the network namespace will disrupt communicati
 4.  It will also affect the shared volumes because both containers inside the pod share the same volumes.
 
 
-### You are running a bare-metal k8s cluster in a standard data center environment (i.e. non-cloud). You have a deployment that needs to have a directory that can be written to by all the pods in a deployment. How would you accomplish this?
+### 3.  You are running a bare-metal k8s cluster in a standard data center environment (i.e. non-cloud). You have a deployment that needs to have a directory that can be written to by all the pods in a deployment. How would you accomplish this?
+
+1.  Create a Shared Volume
+    1.  Define a persistent volume
+    2.  PVs can be backed by local disks, NFS, or other storage solutions like in gke persistence disk.
+    3.  For local volumes, ensure that the storage is accessible from all nodes in your cluster.
+2.  Create a custom storage class with access mode as ReadWriteMany to allow multiple pods to write to the volume simultaneously.
+3.  Create a Persistent Volume Claim (Create a PVC that requests storage from the PV) Specify the created storage class.
+4.  Mount the PVC in Your Deployment Pods. All pods in the deployment can now write to the /shared directory within their containers.
